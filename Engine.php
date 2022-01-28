@@ -80,13 +80,40 @@ class Engine
         $connection = Engine::connect();
         $query = "SELECT * from users where id = {$user_id} LIMIT 1";
         $rows = $connection->query($query);
-        if($rows -> num_rows > 0){
+        if ($rows->num_rows > 0) {
             return $rows->fetch_assoc();
-        }
-        else{
+        } else {
             return -1;
         }
 
+    }
+
+    public static function getUsers()
+    {
+        $connection = Engine::connect();
+        $query = "SELECT * FROM users";
+        $result = $connection->query($query)->fetch_all(MYSQLI_ASSOC);
+        return $result;
+    }
+
+    public static function editUser($fname, $lname, $email,$oldEmail)
+    {
+        $connection = Engine::connect();
+        $query = "UPDATE users set fname = '{$fname}', lname = '{$lname}', email = '{$email}' where email = '{$oldEmail}'";
+        if ($connection->query($query) != TRUE) {
+            return -1;
+        }
+        return 1;
+    }
+
+    public static function deleteUser($user_id)
+    {
+        $connection = Engine::connect();
+        $query = "DELETE from users where id = {$user_id}";
+        if ($connection->query($query) === TRUE) {
+            return 1;
+        }
+        return -1;
     }
 }
 
