@@ -2,7 +2,7 @@
 
 class Engine
 {
-//    itrerate through request array to check and find empty fields
+    //    itrerate through request array to check and find empty fields
     static function validateRequest($request)
     {
         foreach ($request as $value) {
@@ -44,7 +44,7 @@ class Engine
         if ($connection->query($query) === TRUE) {
             return true;
         } else {
-//            in case of error return that error
+            //            in case of error return that error
             return $connection->error;
         }
     }
@@ -85,7 +85,6 @@ class Engine
         } else {
             return -1;
         }
-
     }
 
     public static function getUsers()
@@ -96,7 +95,7 @@ class Engine
         return $result;
     }
 
-    public static function editUser($fname, $lname, $email,$oldEmail)
+    public static function editUser($fname, $lname, $email, $oldEmail)
     {
         $connection = Engine::connect();
         $query = "UPDATE users set fname = '{$fname}', lname = '{$lname}', email = '{$email}' where email = '{$oldEmail}'";
@@ -115,6 +114,97 @@ class Engine
         }
         return -1;
     }
-}
 
-?>
+    public static function createProject($name, $location, $description, $benefits, $education_level, $deadline, $user_id)
+    {
+        $connection = Engine::connect();
+        $query = "INSERT into projects(name, description, location, education_level, benefits, deadline, manager_id) VALUES ('{$name}','{$description}','{$location}','{$education_level}','{$benefits}','{$deadline}',{$user_id})";
+        if ($connection->query($query) === TRUE) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    //get all projects
+    static function getAllProjects()
+    {
+        $connection = Engine::connect();
+        $query = "SELECT * from projects";
+        $result = $connection->query($query);
+        if ($result->num_rows == 0) {
+            return [];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    // get the project from the id
+    static function getProject($project_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT * from projects where id = {$project_id}";
+        $result = $connection->query($query);
+        if ($result->num_rows == 0) {
+            return null;
+        } else {
+            return $result->fetch_assoc();
+        }
+    }
+    static function getActivities($project_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT * from project_activities where project_id = {$project_id}";
+        $result = $connection->query($query);
+        if ($result->num_rows == 0) {
+            return null;
+        } else {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+    }
+    static function projectExists($project_id)
+    {
+        return (Engine::getProject($project_id) == null) ? false : true;
+    }
+    static function createActivity($project_id, $name, $description)
+    {
+        $connection = Engine::connect();
+        $query = "INSERT into project_activities(project_id,name,description) values({$project_id},'{$name}','{$description}')";
+        if ($connection->query($query) === TRUE) {
+            return 1;
+        }
+        return -1;
+    }
+    static function countComments($activity_id)
+    {
+        return 0;
+    }
+    static function countApplications($activity_id)
+    {
+        return 0;
+    }
+    static function checkForApplication($user_id,$project_id){
+        $connection = Engine::connect();
+        $query = "SELECT * FROM project_applications where user_id = {$user_id} and project_id = {$project_id}";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+            return true;
+        }
+        return false;
+    }
+    static function applyForProject($user_id, $project_id, $activity_id = null)
+    {
+        $connection = Engine::connect();
+        if ($activity_id  != null) {
+            $query = "INSERT INTO project_applications(user_id,project_id,activity_id) VALUES ({$user_id},{$project_id},{$activity_id})";
+            if ($connection->query($query) === TRUE) {
+                return 1;
+            }
+            return $connection->error;
+        }
+        else{
+            $query = "INSERT INTO project_applications(user_id,project_id) VALUES ({$user_id},{$project_id})";
+            if ($connection->query($query) === TRUE) {
+                return 1;
+            }
+            return $connection->error;
+        }
+    }
+}

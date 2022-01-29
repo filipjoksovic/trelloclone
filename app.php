@@ -11,7 +11,7 @@ if (isset($_POST['register'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $role_id = $_POST['role_id'];
-//    check if form data is valid
+    //    check if form data is valid
     if (Engine::validateRequest($_POST) == false) {
         $_SESSION['error'] = "Molimo popunite sve podatke u formi.";
         header("location:register.php");
@@ -145,7 +145,7 @@ if (isset($_POST['createUser'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $role_id = $_POST['role_id'];
-//    check if form data is valid
+    //    check if form data is valid
     if (Engine::validateRequest($_POST) == false) {
         $_SESSION['error'] = "Molimo popunite sve podatke u formi.";
         header("location:createUser.php");
@@ -169,4 +169,78 @@ if (isset($_POST['createUser'])) {
         }
     }
 }
-
+//handle the creation of a project
+if ($_POST['create_project']) {
+    //check if the user is a manager
+    if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 2) {
+        $_SESSION['error'] = "Nemate dozvolu pristupa ovom delu sajta.";
+        header("location:home.php");
+        return;
+    }
+    //get form data
+    $name = $_POST['name'];
+    $location = $_POST['location'];
+    $description = $_POST['description'];
+    $benefits = $_POST['benefits'];
+    $education_level = $_POST['education_level'];
+    $deadline = $_POST['deadline'];
+    //handle creation on a separate file
+    $result = Engine::createProject($name, $location, $description, $benefits, $education_level, $deadline, $_SESSION['uid']);
+    //handle redirects
+    if ($result == 1) {
+        $_SESSION['message'] = "Uspesno kreiran projekat";
+        header("location:manager.php");
+        return;
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom kreiranja projekta";
+        header("location:manager.php");
+        return;
+    }
+}
+//handle the creation of the activities
+if ($_POST['create_activity']) {
+    if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 2) {
+        $_SESSION['error'] = "Nemate dozvolu pristupa ovom delu sajta.";
+        header("location:home.php");
+        return;
+    }
+    $name = $_POST['name'];
+    $description = $_POST['description'];
+    $project_id = $_POST['project_id'];
+    if (Engine::projectExists($project_id) == false) {
+        $_SESSION['error'] = "Projekat sa zadatom sifrom ne postoji. Proverite podatke i pokusajte ponovo.";
+        header("location:manager.php");
+    } else {
+        $result = Engine::createActivity($project_id, $name, $description);
+        if ($result == -1) {
+            $_SESSION['error'] = "Doslo je do greske prilikom kreiranja projektne aktivnosti.";
+            header("location:projectDetails.php?id={$project_id}");
+            return;
+        } else {
+            $_SESSION['message'] = "Uspesno kreirana projektna aktivnost.";
+            header("location:projectDetails.php?id={$project_id}");
+            return;
+        }
+    }
+}
+if ($_POST['project_application']) {
+    $project_id = $_POST['project_id'];
+    $activity_id = $_POST['activity_id'];
+    $user_id = $_SESSION['uid'];
+    if (!Engine::checkForApplication($user_id, $project_id)) {
+        $result = Engine::applyForProject($user_id, $project_id, $activity_id);
+        if ($result == 1) {
+            $_SESSION['message'] = "Uspesno prijavljivanje na projekat. Po pregledu menadzera moci cete da upravljate dodeljenjim aktivnostima.";
+            header("location:home.php");
+        } else {
+            $_SESSION['error'] = "Doslo je do greske prilikom prijavljivanja na projekat. Greska: " . $result;
+            header("location:home.php");
+            return;
+        }
+    }
+    else{
+        $_SESSION['error'] = "Vec ste prijavljeni za ovaj projekat.";
+        header("location:home.php");
+        return;
+    }
+}
