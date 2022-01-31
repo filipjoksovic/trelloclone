@@ -133,6 +133,14 @@ class Engine
         }
         return $connection->error;
     }
+    public static function deleteProject($project_id){
+        $connection = Engine::connect();
+        $query = "DELETE from projects where projects.id = {$project_id}";
+        if($connection->query($query) === TRUE){
+            return 1;
+        }
+        return $connection['error'];
+    }
 
     //get all projects
     static function getAllProjects()

@@ -58,7 +58,7 @@ $projects = $connection->query($query)->fetch_all(MYSQLI_ASSOC);
                             </div>
                             <div class="col-md-4">
                                 <form action="app.php" method="POST">
-                                    <input type="hidden" name="delete_project">
+                                    <input type="hidden" name="delete_project" value = "1">
                                     <input type="hidden" name="project_id" value="<?php echo $project['id']; ?>">
                                     <button type="submit" class="btn btn-danger mx-auto d-block">Ukloni</button>
                                 </form>

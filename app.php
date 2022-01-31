@@ -319,3 +319,19 @@ if ($_POST['edit_project']) {
         return;
     }
 }
+if ($_POST['delete_project']) {
+    if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 2) {
+        $_SESSION['error'] = "Nemate dozvolu pristupa ovom delu sajta.";
+        header("location:home.php");
+        return;
+    }
+    $project_id = $_POST['project_id'];
+    $result = Engine::deleteProject($project_id);
+    if ($result == 1) {
+        $_SESSION['message'] = "Projekat uspesno uklonjen.";
+        header("location:" . $_SERVER['HTTP_REFERER']);
+        return;
+    }
+    $_SESSION['error'] = "Doslo je do greske prilikom uklanjanja projekta.";
+    header("location:" . $_SERVER['HTTP_REFERER']);
+}
