@@ -125,6 +125,14 @@ class Engine
             return -1;
         }
     }
+    public static function editProject($project_id,$name, $location, $description, $benefits, $education_level, $deadline){
+        $connection = Engine::connect();
+        $query = "UPDATE projects set projects.name = '{$name}', projects.location = '{$location}',projects.description = '{$description}',projects.benefits = '{$benefits}',projects.education_level = '{$education_level}',projects.deadline = '{$deadline}' where projects.id = {$project_id}";
+        if($connection->query($query) === TRUE){
+            return 1;
+        }
+        return $connection->error;
+    }
 
     //get all projects
     static function getAllProjects()

@@ -254,44 +254,68 @@ if ($_POST['allow_application']) {
     header("location:" . $_SERVER['HTTP_REFERER']);
     return;
 }
-if($_POST['advance_assignment']){
+if ($_POST['advance_assignment']) {
     $activity_id = $_POST['activity_id'];
     $result = Engine::advanceAssignment($activity_id);
-    if($result == 1){
+    if ($result == 1) {
         $_SESSION['message'] = "Uspesno promenjen status projektne aktivnosti.";
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom izmene projektne aktivnosti. Greska: " . $result;
     }
-    else{
-        $_SESSION['error'] = "Doslo je do greske prilikom izmene projektne aktivnosti. Greska: " .$result;
-    }
-    header("location:".$_SERVER['HTTP_REFERER']);
+    header("location:" . $_SERVER['HTTP_REFERER']);
     return;
 }
-if($_POST['assign_activity']){
+if ($_POST['assign_activity']) {
     $user_id = $_POST['user_id'];
     $activity_id = $_POST['activity_id'];
-    $result = Engine::assignActivity($user_id,$activity_id);
-    if($result == 1){
+    $result = Engine::assignActivity($user_id, $activity_id);
+    if ($result == 1) {
         $_SESSION['message'] = "Uspesno dodeljena aktivnost.";
-    }
-    else{
+    } else {
         $_SESSION['error'] = "Doslo je do greske prilikom dodele aktivnosti. Greska: " . $result;
     }
     header("location:manager.php");
     return;
 }
-if($_POST['leave_comment']){
+if ($_POST['leave_comment']) {
     $user_id = $_SESSION['uid'];
     $activity_id = $_POST['activity_id'];
     $comment_text = $_POST['comment_text'];
-        $result = Engine::leaveComment($user_id,$activity_id,$comment_text);
-        if($result == 1){
-            $_SESSION['message'] = "Uspesno ostavljen komentar.";
-            header("location:".$_SERVER['HTTP_REFERER']);
-            return;
-        }
-        else{
-            $_SESSION['error'] = "Doslo je do greske prilikom ostavljanja komentara. Tekst greske: " . $result;
-            header("location:".$_SERVER['HTTP_REFERER']);
-            return;
-        }
+    $result = Engine::leaveComment($user_id, $activity_id, $comment_text);
+    if ($result == 1) {
+        $_SESSION['message'] = "Uspesno ostavljen komentar.";
+        header("location:" . $_SERVER['HTTP_REFERER']);
+        return;
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom ostavljanja komentara. Tekst greske: " . $result;
+        header("location:" . $_SERVER['HTTP_REFERER']);
+        return;
+    }
+}
+if ($_POST['edit_project']) {
+    if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 2) {
+        $_SESSION['error'] = "Nemate dozvolu pristupa ovom delu sajta.";
+        header("location:home.php");
+        return;
+    }
+    //get form data
+    $project_id = $_POST['project_id'];
+    $name = $_POST['name'];
+    $location = $_POST['location'];
+    $description = $_POST['description'];
+    $benefits = $_POST['benefits'];
+    $education_level = $_POST['education_level'];
+    $deadline = $_POST['deadline'];
+    //handle creation on a separate file
+    $result = Engine::editProject($project_id, $name, $location, $description, $benefits, $education_level, $deadline, $_SESSION['uid']);
+    //handle redirects
+    if ($result == 1) {
+        $_SESSION['message'] = "Uspesno izmenjen projekat";
+        header("location:" . $_SERVER['HTTP_REFERER']);
+        return;
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom izmene projekta. Greska: " . $result;
+        header("location:" . $_SERVER['HTTP_REFERER']);
+        return;
+    }
 }
