@@ -14,31 +14,27 @@
 <?php include("components/nav.php") ?>
 <?php
 require "Engine.php";
-$projects = Engine::getAllProjects();
+$activities = Engine::getAssignedActivities($_SESSION['uid']);
 ?>
 <div class="container my-3">
-    <h1 class="display-4 text-center mb-3">Dostupni projekti</h1>
+    <h1 class="display-4 text-center mb-3">Dodeljene projektne aktivnosti
+    </h1>
     <div class="row">
-        <?php foreach ($projects as $project) : ?>
+        <?php foreach ($activities as $activity) : ?>
             <div class="col-md-6">
                 <div class="card my-2">
                     <div class="card-body">
-                        <h4 class="card-title"><?php echo $project['name']; ?>
-                            <?php if (Engine::checkForAllowedApplication($_SESSION['uid'], $project['id'])) : ?>
-                                <span class="badge badge-success">Odobrena prijava</span>
-                            <?php elseif (Engine::checkForDeniedApplication($_SESSION['uid'], $project['id'])) : ?>
-                                <span class="badge badge-danger">Odbijena prijava</span>
-                            <?php elseif (Engine::checkForApplication($_SESSION['uid'], $project['id'])) : ?>
-                                <span class="badge badge-primary">Otvorena prijava</span>
-                            <?php else: ?>
-                                <span class="badge badge-warning">Prijavi se</span>
-                            <?php endif; ?>
+                        <h4 class="card-title"><?php echo $activity['name']; ?> <span
+                                    class="badge badge-primary"><?php echo $activity['status']; ?></span>
                         </h4>
-                        <p class="card-text">Opis: <?php echo $project['description']; ?></p>
-                        <p class="card-text">Pogodnosti: <?php echo $project['benefits']; ?></p>
-                        <p class="card-text">Stepen strucne spreme:
-                            <strong><?php echo $project['education_level']; ?></strong></p>
-                        <a href="details.php?id=<?php echo $project['id']; ?>">Detalji</a>
+                        <p class="card-text">Opis: <?php echo $activity['description']; ?></p>
+                        <a href="details.php?id=<?php echo $activity['pid']; ?>">Detalji</a>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex w-100 justify-content-around">
+                            <p>Projekat: <?php echo $activity['pname']; ?></p>
+                            <p>Aktivnost dodeljena: <?php echo date("d-m-Y", strtotime($activity['updated_at'])); ?></p>
+                        </div>
                     </div>
                 </div>
             </div>

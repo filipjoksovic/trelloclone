@@ -255,8 +255,8 @@ if ($_POST['allow_application']) {
     return;
 }
 if($_POST['advance_assignment']){
-    $assignment_id = $_POST['assignment_id'];
-    $result = Engine::advanceAssignment($assignment_id);
+    $activity_id = $_POST['activity_id'];
+    $result = Engine::advanceAssignment($activity_id);
     if($result == 1){
         $_SESSION['message'] = "Uspesno promenjen status projektne aktivnosti.";
     }
@@ -264,5 +264,18 @@ if($_POST['advance_assignment']){
         $_SESSION['error'] = "Doslo je do greske prilikom izmene projektne aktivnosti. Greska: " .$result;
     }
     header("location:".$_SERVER['HTTP_REFERER']);
+    return;
+}
+if($_POST['assign_activity']){
+    $user_id = $_POST['user_id'];
+    $activity_id = $_POST['activity_id'];
+    $result = Engine::assignActivity($user_id,$activity_id);
+    if($result == 1){
+        $_SESSION['message'] = "Uspesno dodeljena aktivnost.";
+    }
+    else{
+        $_SESSION['error'] = "Doslo je do greske prilikom dodele aktivnosti. Greska: " . $result;
+    }
+    header("location:manager.php");
     return;
 }

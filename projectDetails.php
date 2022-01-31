@@ -21,7 +21,8 @@ if ($project == null) {
     header("location:manager.php");
     return;
 }
-$activities = Engine::getActivities($project_id);
+$unassignedActivities = Engine::getUnassignedActivities($project_id);
+$assignedActivities = Engine::getAssignedActivities($project_id);
 
 ?>
 <div class="container-fluid p-5 my-3">
@@ -45,13 +46,13 @@ $activities = Engine::getActivities($project_id);
         </div>
         <div class="col-md-4">
             <div class="d-flex flex-column justify-content-between h-100">
-                <h1 class="display-4">Aktivnosti</h1>
-                <?php if ($activities == null) : ?>
+                <h1 class="display-4">Nedodeljene Aktivnosti</h1>
+                <?php if ($unassignedActivities == null) : ?>
                     <p>Nemate trenutno dodatih aktivnosti za ovaj projekat.</p>
                 <?php else : ?>
                     <div class="card">
                         <ul class="list-group list-group-flush">
-                            <?php foreach ($activities as $activity) : ?>
+                            <?php foreach ($unassignedActivities as $activity) : ?>
                                 <li class="list-group-item">
                                     <div class="container-fluid">
                                         <div class="my-2 row align-items-center justify-content-between">
@@ -59,30 +60,10 @@ $activities = Engine::getActivities($project_id);
                                                 <?php echo $activity['name']; ?>
                                             </div>
                                             <div class="col-md-3">
-                                                <?php if (!Engine::activityAssigned($activity['id'])): ?>
-
                                                 <a class="btn btn-primary"
-                                                   href="activityDetails.php?id=<?php echo $activity['id']; ?>">Detalji</a>
-                                            </div>
-                                            <?php else: ?>
-                                                <button class="btn btn-primary"
-                                                        disabled><?php echo Engine::getActivityStatus($activity['id']); ?></button>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="my-2 w-100 row align-items-center justify-content-between">
-                                            <div class="col-md-6 text-left">
-                                                <p>Broj
-                                                    komentara: <?php echo Engine::countComments($activity['id']); ?></p>
-                                            </div>
-                                            <div class="col-md-6 text-right">
-                                                <?php if (!Engine::activityAssigned($activity['id'])): ?>
-                                                    <p>Broj
-                                                        konkursa: <?php echo Engine::countApplications($activity['id']); ?></p>
-                                                <?php else: ?>
-                                                    <p>Aktivnost
-                                                        preuzeo: <?php $user = Engine::getResponsibleForActivity($activity['id']);
-                                                        echo $user['fname'] . " " . $user['lname']; ?></p>
-                                                <?php endif; ?>
+                                                   href="assignActivity.php?id=<?php echo $activity['id']; ?>">Dodeli
+                                                    aktivnost</a>
+
                                             </div>
                                         </div>
                                     </div>
@@ -98,25 +79,32 @@ $activities = Engine::getActivities($project_id);
             </div>
         </div>
         <div class="col-md-4">
-            <h1 class="display-4">Prijave</h1>
-            <?php
-            $applications = Engine::getApplications($project_id);
-            ?>
-            <?php foreach ($applications as $application) : ?>
-                <div class="card text-left">
-                    <div class="card-body">
-                        <h4 class="card-title"><?php echo $application['fname'] . " " . $application['lname']; ?></h4>
-                        <p class="card-text"><?php echo ($application['name'] != null) ? $application['name'] : "Ceo projekat"; ?></p>
-                    </div>
-                    <div class="card-footer">
-                        <form action="app.php" method="POST">
-                            <input type="hidden" name="allow_application" value="1">
-                            <input type="hidden" name="application_id" value="<?php echo $application['apid']; ?>">
-                            <button type="submit" class="btn btn-success">Odobri</button>
-                        </form>
-                    </div>
+            <h1 class="display-4">Dodeljene Aktivnosti</h1>
+            <?php if ($assignedActivities == null) : ?>
+                <p>Nemate trenutno dodeljenih aktivnosti za ovaj projekat.</p>
+            <?php else: ?>
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <?php foreach ($assignedActivities as $activity) : ?>
+                            <li class="list-group-item">
+                                <div class="container-fluid">
+                                    <div class="my-2 row align-items-center justify-content-between">
+                                        <div class="col-md-9 text-left">
+                                            <?php echo $activity['name']; ?>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a class="btn btn-primary"
+                                               href="assignActivity.php?id=<?php echo $activity['id']; ?>">Dodeli
+                                                aktivnost</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        <?php endforeach ?>
+                    </ul>
                 </div>
-            <?php endforeach; ?>
+            <?php endif; ?>
 
         </div>
     </div>
