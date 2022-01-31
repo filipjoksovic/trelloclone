@@ -63,15 +63,15 @@ $activities = Engine::getActivities($project_id);
                                             <input type="hidden" name="activity_id"
                                                    value="<?php echo $activity['aid']; ?>">
                                             <button type="submit"
-                                                    class="btn btn-primary btn-block"><?php echo Engine::getStatusName($activity['status_id']); ?>
+                                                    class="btn btn-sm btn-primary btn-block"><?php echo Engine::getStatusName($activity['status_id']); ?>
                                                 <br>-><?php echo Engine::getStatusName($activity['status_id'] + 1); ?>
                                             </button>
                                         </form>
                                     <?php else: ?>
                                         <button disabled
                                                 class="btn btn-success"><?php echo Engine::getStatusName($activity['status_id']); ?></button>
-
                                     <?php endif; ?>
+                                    <a href = "comments.php?id=<?php echo $activity['aid'];?>">Komentari</a>
                                 </div>
                             </div>
                             <div class="row">

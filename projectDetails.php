@@ -21,8 +21,8 @@ if ($project == null) {
     header("location:manager.php");
     return;
 }
-$unassignedActivities = Engine::getUnassignedActivities($project_id);
-$assignedActivities = Engine::getAssignedActivities($project_id);
+$unassignedActivities = Engine::getUnassignedProjectActivities($project_id);
+$assignedActivities = Engine::getAssignedProjectActivities($project_id);
 
 ?>
 <div class="container-fluid p-5 my-3">
@@ -45,7 +45,7 @@ $assignedActivities = Engine::getAssignedActivities($project_id);
             </div>
         </div>
         <div class="col-md-4">
-            <div class="d-flex flex-column justify-content-between h-100">
+            <div class="">
                 <h1 class="display-4">Nedodeljene Aktivnosti</h1>
                 <?php if ($unassignedActivities == null) : ?>
                     <p>Nemate trenutno dodatih aktivnosti za ovaj projekat.</p>
@@ -61,7 +61,7 @@ $assignedActivities = Engine::getAssignedActivities($project_id);
                                             </div>
                                             <div class="col-md-3">
                                                 <a class="btn btn-primary"
-                                                   href="assignActivity.php?id=<?php echo $activity['id']; ?>">Dodeli
+                                                   href="assignActivity.php?id=<?php echo $activity['aid']; ?>">Dodeli
                                                     aktivnost</a>
 
                                             </div>
@@ -74,38 +74,41 @@ $assignedActivities = Engine::getAssignedActivities($project_id);
                     </div>
 
                 <?php endif; ?>
-                <a class="btn btn-success w-50 d-block mx-auto" href="addActivity.php?id=<?php echo $project_id; ?>">Dodajte
+                <a class="btn btn-success w-50 d-block mx-auto my-3"
+                   href="addActivity.php?id=<?php echo $project_id; ?>">Dodajte
                     aktivnost</a>
             </div>
         </div>
         <div class="col-md-4">
-            <h1 class="display-4">Dodeljene Aktivnosti</h1>
-            <?php if ($assignedActivities == null) : ?>
-                <p>Nemate trenutno dodeljenih aktivnosti za ovaj projekat.</p>
-            <?php else: ?>
-                <div class="card">
-                    <ul class="list-group list-group-flush">
+            <div class="">
+                <h1 class="display-4">Dodeljene Aktivnosti</h1>
+                <?php if ($assignedActivities == null) : ?>
+                    <p>Nemate trenutno dodeljenih aktivnosti za ovaj projekat.</p>
+                <?php else: ?>
+                    <div class="card my-1">
                         <?php foreach ($assignedActivities as $activity) : ?>
+                        <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <div class="container-fluid">
                                     <div class="my-2 row align-items-center justify-content-between">
                                         <div class="col-md-9 text-left">
-                                            <?php echo $activity['name']; ?>
+                                            <p><?php echo $activity['name']; ?></p>
+                                            <p>Preuzeo: <?php echo $activity['fname'] . " " . $activity['lname']; ?>
+                                            </p>
                                         </div>
                                         <div class="col-md-3">
-                                            <a class="btn btn-primary"
-                                               href="assignActivity.php?id=<?php echo $activity['id']; ?>">Dodeli
-                                                aktivnost</a>
+                                            <button class="btn btn-sm btn-primary"
+                                                    disabled><?php echo $activity['status']; ?></button>
+                                            <a href = "comments.php?id=<?php echo $activity['aid'];?>">Komentari</a>
                                         </div>
                                     </div>
                                 </div>
                             </li>
-
-                        <?php endforeach ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
+                            <?php endforeach ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

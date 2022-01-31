@@ -279,3 +279,19 @@ if($_POST['assign_activity']){
     header("location:manager.php");
     return;
 }
+if($_POST['leave_comment']){
+    $user_id = $_SESSION['uid'];
+    $activity_id = $_POST['activity_id'];
+    $comment_text = $_POST['comment_text'];
+        $result = Engine::leaveComment($user_id,$activity_id,$comment_text);
+        if($result == 1){
+            $_SESSION['message'] = "Uspesno ostavljen komentar.";
+            header("location:".$_SERVER['HTTP_REFERER']);
+            return;
+        }
+        else{
+            $_SESSION['error'] = "Doslo je do greske prilikom ostavljanja komentara. Tekst greske: " . $result;
+            header("location:".$_SERVER['HTTP_REFERER']);
+            return;
+        }
+}

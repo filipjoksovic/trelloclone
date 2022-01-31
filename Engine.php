@@ -260,6 +260,29 @@ class Engine
         return [];
     }
 
+    public static function getAssignedProjectActivities($project_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT users.fname,users.lname,p.name as 'pname',p.id as 'pid',project_activities.name,project_activities.id as 'aid',project_activities.description,project_activities.updated_at,project_activities.status_id,activity_statuses.name as 'status' FROM project_activities INNER JOIN activity_statuses on project_activities.status_id = activity_statuses.id INNER JOIN users on users.id = project_activities.user_id INNER JOIN projects p on project_activities.project_id = p.id where project_activities.project_id = {$project_id} and user_id is not null";
+        $result = $connection->query($query);
+        if ($connection->query($query)->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return [];
+    }
+
+    public static function getUnassignedProjectActivities($project_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT p.name as 'pname',p.id as 'pid',project_activities.name,project_activities.id as 'aid',project_activities.description,project_activities.updated_at,project_activities.status_id,activity_statuses.name as 'status' FROM project_activities LEFT JOIN activity_statuses on project_activities.status_id = activity_statuses.id INNER JOIN projects p on project_activities.project_id = p.id where project_activities.project_id = {$project_id} and user_id is null";
+        $result = $connection->query($query);
+        if ($connection->query($query)->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return [];
+
+    }
+
     public static function checkForAssignments($uid, $project_id)
     {
         $connection = Engine::connect();
@@ -289,6 +312,47 @@ class Engine
             return $connection->error;
         }
         return $connection->error . " " . $fquery;
+    }
+    public static function commentExists($activity_id,$user_id){
+        $connection = Engine::connect();
+        $query = "SELECT * from activity_comments where activity_id = {$activity_id} and user_id = {$user_id}";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public static function leaveComment($user_id, $activity_id, $comment_text)
+    {
+        $connection = Engine::connect();
+        $query = "INSERT into activity_comments(user_id,activity_id,comment_text) values ({$user_id},{$activity_id},'{$comment_text}')";
+        if($connection->query($query) === TRUE){
+            return 1;
+        }
+        return $connection->error;
+    }
+
+    public static function getComments($activity_id,$user_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT users.*, activity_comments.* from activity_comments INNER JOIN users on activity_comments.user_id = users.id WHERE activity_comments.activity_id = {$activity_id} AND users.id = {$user_id} ORDER BY activity_comments.created_at ASC";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return [];
+    }
+    public static function getCommentsForManager($activity_id){
+        $connection = Engine::connect();
+        $query = "SELECT users.*, activity_comments.* from activity_comments INNER JOIN users on activity_comments.user_id = users.id WHERE activity_comments.activity_id = {$activity_id} ORDER BY activity_comments.created_at ASC";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return [];
     }
 
 }
