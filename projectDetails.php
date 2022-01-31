@@ -66,7 +66,7 @@ $activities = Engine::getActivities($project_id);
                                             </div>
                                             <?php else: ?>
                                                 <button class="btn btn-primary"
-                                                        disabled><?php echo Engine::getActivityStatus($project_id, $activity['id']); ?></button>
+                                                        disabled><?php echo Engine::getActivityStatus($activity['id']); ?></button>
                                             <?php endif; ?>
                                         </div>
                                         <div class="my-2 w-100 row align-items-center justify-content-between">
@@ -111,7 +111,7 @@ $activities = Engine::getActivities($project_id);
                     <div class="card-footer">
                         <form action="app.php" method="POST">
                             <input type="hidden" name="allow_application" value="1">
-                            <input type="hidden" name="application_id" value="<?php echo $application['id']; ?>">
+                            <input type="hidden" name="application_id" value="<?php echo $application['apid']; ?>">
                             <button type="submit" class="btn btn-success">Odobri</button>
                         </form>
                     </div>

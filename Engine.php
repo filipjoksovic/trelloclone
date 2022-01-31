@@ -42,7 +42,7 @@ class Engine
         $password = md5($password);
         $query = "INSERT into users(fname, lname, email, password, role_id) VALUES('{$fname}','{$lname}','{$email}','{$password}',{$role_id})";
         if ($connection->query($query) === TRUE) {
-            return true;
+            return $connection->insert_id;
         } else {
             //            in case of error return that error
             return $connection->error;
@@ -70,7 +70,7 @@ class Engine
             return -1;
         } else {
             //if user found form an assoc array and return just the id
-            $user = $rows->fetch_assoc();
+            $user = $rows->fetch_array(MYSQLI_ASSOC);
             return $user['id'];
         }
     }
@@ -157,7 +157,7 @@ class Engine
         $query = "SELECT * from project_activities where project_id = {$project_id}";
         $result = $connection->query($query);
         if ($result->num_rows == 0) {
-            return null;
+            return [];
         } else {
             return $result->fetch_all(MYSQLI_ASSOC);
         }
@@ -193,7 +193,7 @@ class Engine
         $connection = Engine::connect();
         $query = "SELECT * FROM project_applications where user_id = {$user_id} and project_id = {$project_id} and allowed = 0";
         $result = $connection->query($query);
-        if ($result != null) {
+        if ($result->num_rows > 0) {
             return true;
         }
         return false;
@@ -242,7 +242,7 @@ class Engine
     static function getApplications($project_id)
     {
         $connection = Engine::connect();
-        $query = "SELECT project_activities.id,project_activities.name,users.fname,users.lname,project_applications.created_at FROM project_applications INNER JOIN projects on projects.id = project_applications.id LEFT JOIN project_activities on project_applications.activity_id = project_activities.id INNER JOIN users on users.id = project_applications.user_id WHERE project_applications.project_id = {$project_id}";
+        $query = "SELECT project_applications.id as 'apid',project_activities.id,project_activities.name,users.fname,users.lname,project_applications.created_at FROM project_applications INNER JOIN projects on projects.id = project_applications.id LEFT JOIN project_activities on project_applications.activity_id = project_activities.id INNER JOIN users on users.id = project_applications.user_id WHERE project_applications.project_id = {$project_id}";
         $result = $connection->query($query);
         if ($result != null) {
             return $result->fetch_all(MYSQLI_ASSOC);
@@ -288,6 +288,16 @@ class Engine
     {
         $connection = Engine::connect();
         $query = "SELECT project_activities.*,project_applications.*,activity_statuses.name as 'sname' from project_applications INNER JOIN activity_statuses on activity_statuses.id = project_applications.status_id INNER JOIN project_activities on project_applications.activity_id = project_activities.id where project_applications.project_id = {$project_id} and user_id = {$user_id} and allowed = 1";
+        $result = $connection->query($query);
+        if ($result != null) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return [];
+    }
+    public static function getAssignedActivity($user_id, $project_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT project_applications.*,activity_statuses.name as 'sname' from project_applications INNER JOIN activity_statuses on activity_statuses.id = project_applications.status_id  where project_applications.project_id = {$project_id} and user_id = {$user_id} and allowed = 1";
         $result = $connection->query($query);
         if ($result != null) {
             return $result->fetch_all(MYSQLI_ASSOC);
@@ -357,14 +367,39 @@ class Engine
         return false;
     }
 
-    public static function getActivityStatus($project_id, $id)
+    public static function getActivityStatus( $id)
     {
         $connection = Engine::connect();
-        $query = "SELECT activity_statuses.name FROM project_applications INNER JOIN activity_statuses on project_applications.status_id = activity_statuses.id where project_applications.project_id = {$project_id} and project_applications.activity_id = {$id} and allowed = 1";
+        $query = "SELECT activity_statuses.name FROM project_applications INNER JOIN activity_statuses on project_applications.status_id = activity_statuses.id where project_applications.activity_id = {$id} and allowed = 1";
         $result = $connection->query($query);
         if ($result->num_rows > 0) {
             return $result->fetch_array(MYSQLI_NUM)[0];
         }
         return null;
     }
+
+    public static function getActivity($activity_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT project_activities.* FROM project_activities where id = {$activity_id} LIMIT 1";
+        $result = $connection->query($query);
+        if($result->num_rows > 0){
+            return $result->fetch_assoc();
+        }
+        return [];
+    }
+
+    public static function getActivityApplications($activity_id)
+    {
+        $connection = Engine::connect();
+        $query = "SELECT project_activities.id,project_activities.name,users.fname,users.lname,project_applications.created_at FROM project_applications INNER JOIN projects on projects.id = project_applications.id LEFT JOIN project_activities on project_applications.activity_id = project_activities.id INNER JOIN users on users.id = project_applications.user_id WHERE project_applications.activity_id = {$activity_id}";
+        $result = $connection->query($query);
+        if ($result != null) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            return [];
+        }
+    }
+
+
 }
