@@ -63,10 +63,10 @@
                                             </div>
                                             <div class="my-2 row align-items-center justify-content-between">
                                                 <div class="col-md-8 text-left">
-                                                    <p>Broj komentara: <?php echo Engine::countComments($activity['id']);?></p>
+                                                    <p>Broj komentara: <?php echo Engine::countComments($activity['id']); ?></p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p>Broj konkursa: <?php echo Engine::countApplications($activity['id']);?></p>
+                                                    <p>Broj konkursa: <?php echo Engine::countApplications($activity['id']); ?></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -82,6 +82,25 @@
             </div>
             <div class="col-md-4">
                 <h1 class="display-4">Prijave</h1>
+                <?php
+                $applications = Engine::getApplications($project_id);
+                ?>
+                <?php foreach ($applications as $application) : ?>
+                    <div class="card text-left">
+                        <div class="card-body">
+                            <h4 class="card-title"><?php echo $application['fname'] . " " . $application['lname']; ?></h4>
+                            <p class="card-text"><?php echo ($application['name'] != null)? $application['name'] : "Ceo projekat"; ?></p>
+                        </div>
+                        <div class = "card-footer">
+                            <form action = "app.php" method = "POST">
+                                <input type = "hidden" name = "allow_application" value = "1">
+                                <input type = "hidden" name = "application_id" value = "<?php echo $application['id'];?>">
+                                <button type = "submit" class = "btn btn-success">Odobri</button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
             </div>
         </div>
     </div>

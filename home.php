@@ -22,7 +22,15 @@
                 <div class="col-md-6">
                     <div class="card my-2">
                         <div class="card-body">
-                            <h4 class="card-title"><?php echo $project['name']; ?></h4>
+                            <h4 class="card-title"><?php echo $project['name']; ?>
+                                <?php if (Engine::checkForAllowedApplication($_SESSION['uid'], $project['id'])) : ?>
+                                    <span class="badge badge-success">Odobrena prijava</span>
+                                <?php elseif (Engine::checkForDeniedApplication($_SESSION['uid'], $project['id'])) : ?>
+                                    <span class="badge badge-danger">Odbijena prijava</span>
+                                <?php elseif (Engine::checkForApplication($_SESSION['uid'], $project['id'])) : ?>
+                                    <span class="badge badge-primary">Aktivna prijava</span>
+                                <?php endif; ?>
+                            </h4>
                             <p class="card-text">Opis: <?php echo $project['description']; ?></p>
                             <p class="card-text">Pogodnosti: <?php echo $project['benefits']; ?></p>
                             <p class="card-text">Stepen strucne spreme: <strong><?php echo $project['education_level']; ?></strong></p>

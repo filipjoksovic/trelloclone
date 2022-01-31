@@ -237,10 +237,32 @@ if ($_POST['project_application']) {
             header("location:home.php");
             return;
         }
-    }
-    else{
+    } else {
         $_SESSION['error'] = "Vec ste prijavljeni za ovaj projekat.";
         header("location:home.php");
         return;
     }
+}
+if ($_POST['allow_application']) {
+    $application_id  = $_POST['application_id'];
+    $result = Engine::allowApplication($application_id);
+    if ($result == 1) {
+        $_SESSION['message'] = "Uspesno odoborena aplikacija za aktivnost na projektu.";
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom odobravanja aktivnosti na projektu. Greska: " . $result;
+    }
+    header("location:" . $_SERVER['HTTP_REFERER']);
+    return;
+}
+if($_POST['advance_assignment']){
+    $assignment_id = $_POST['assignment_id'];
+    $result = Engine::advanceAssignment($assignment_id);
+    if($result == 1){
+        $_SESSION['message'] = "Uspesno promenjen status projektne aktivnosti.";
+    }
+    else{
+        $_SESSION['error'] = "Doslo je do greske prilikom izmene projektne aktivnosti. Greska: " .$result;
+    }
+    header("location:".$_SERVER['HTTP_REFERER']);
+    return;
 }
