@@ -9,6 +9,7 @@
 </head>
 <body>
     <?php include("components/nav.php");?>
+    <?php require("managerMiddleware.php");?>
     <?php
         require "Engine.php"; 
         $project_id = $_GET['id'];

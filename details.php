@@ -12,6 +12,7 @@
 
 <body>
 <?php include("components/nav.php") ?>
+<?php include("userMiddleware.php");?>
 <?php
 require "Engine.php";
 $project_id = $_GET['id'];
@@ -46,7 +47,7 @@ $activities = Engine::getActivities($project_id);
             </div>
             <div class="col-md-8">
                 <?php
-                $activities = Engine::getAssignedActivities($_SESSION['uid'], $project_id);
+                $activities = Engine::getAssignedProjectActivitiesForUser($_SESSION['uid'], $project_id);
                 ?>
                 <h1 class="display-4">Aktivnosti</h1>
                 <?php foreach ($activities as $activity) : ?>

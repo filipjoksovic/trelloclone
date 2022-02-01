@@ -277,6 +277,17 @@ if ($_POST['assign_activity']) {
     header("location:manager.php");
     return;
 }
+if ($_POST['assign_project']) {
+    $project_id = $_POST['project_id'];
+    $user_id = $_POST['user_id'];
+    $result = Engine::assignProject($user_id,$project_id);
+    if ($result == 1) {
+        $_SESSION['message'] = "Uspesno dodeljen projekat";
+    } else {
+        $_SESSION['error'] = "Doslo je do greske prilikom dodeljivanja projekta. Greska: " . $result;
+    }
+    header("location:manager.php");
+}
 if ($_POST['leave_comment']) {
     $user_id = $_SESSION['uid'];
     $activity_id = $_POST['activity_id'];

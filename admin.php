@@ -14,7 +14,8 @@ $users = Engine::getUsers();
 
 </head>
 <body>
-<?php include("components/nav.php") ?>
+<?php include("components/nav.php") ?> 
+<?php require("adminMiddleware.php")?>
 <div class="container my-3">
     <h1>Prikaz korisnika</h1>
     <?php foreach ($users as $user): ?>

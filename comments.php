@@ -35,6 +35,7 @@ if ($activity == null) {
         </div>
         <div class="col-md-8">
             <?php if ($_SESSION['role_id'] == 1): ?>
+                <?php include("userMiddleware.php");?>
                 <?php if (!Engine::commentExists($activity_id, $_SESSION['uid'])): ?>
                     <h1 class="display-4">Ostavi komentar</h1>
                     <form action="app.php" method="POST">
@@ -77,6 +78,7 @@ if ($activity == null) {
                 <?php endif; ?>
 
             <?php elseif ($_SESSION['role_id'] == 2): ?>
+                <?php include("managerMiddleware.php");?>
                 <h1 class="display-4">Ostavljeni komentari</h1>
                 <h1 class="display-4">Postavljeni komentari</h1>
                 <?php
